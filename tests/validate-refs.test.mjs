@@ -15,6 +15,12 @@ test('ignora URLs e comandos', () => {
   assert.deepEqual(extrairReferencias(texto), [])
 })
 
+test('nome de arquivo sem barra e ignorado', () => {
+  const texto = 'Cada bloco corresponde a uma entrada de `registry.yaml`, e o agente ' +
+    'inspeciona `CLAUDE.md` e `settings.json` do projeto auditado.'
+  assert.deepEqual(extrairReferencias(texto), [])
+})
+
 test('referencia inexistente e reportada', () => {
   const arquivos = new Map([['skills/release/SKILL.md', 'Leia `references/etapas/99-nada.md`.']])
   const erros = validarReferencias(arquivos, () => false)

@@ -13,6 +13,12 @@ export function extrairReferencias(conteudo) {
     // plugin: `.dd/config.yml` e `.protocolo/<stamp>/report.md` sao citados
     // na documentacao mas nunca existem dentro de plugins/dd.
     if (caminho.startsWith('/') || caminho.startsWith('.')) return
+    // Exigir barra e o que separa ponteiro de prosa. `references/etapas/01.md`
+    // aponta para dentro do plugin e precisa resolver; `CLAUDE.md`,
+    // `settings.json` e `package.json` sao artefatos do projeto AUDITADO, que os
+    // guias nomeiam de proposito e que nunca existirao aqui dentro. Nome nu em
+    // crase e prosa citando um arquivo, nao um link.
+    if (!caminho.includes('/')) return
     achados.add(caminho)
   }
   for (const m of conteudo.matchAll(EM_BACKTICK)) considerar(m[1])
