@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "validate": "node scripts/validate-checks.mjs"
+    "validate": "node scripts/validate-checks.mjs && node scripts/validate-refs.mjs"
   },
   "devDependencies": {
     "yaml": "^2.6.1"
