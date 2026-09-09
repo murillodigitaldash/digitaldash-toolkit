@@ -1,0 +1,8 @@
+{
+  "name": "dd",
+  "version": "0.1.0",
+  "description": "Protocolo de performance e protecao de sistemas da Digital Dash: eixo Release (12 etapas) e eixo Postura sobre um nucleo unico de checks",
+  "author": { "name": "Murillo Azevedo", "email": "murillo@digitaldash.info" },
+  "repository": "https://github.com/murillodigitaldash/digitaldash-toolkit",
+  "keywords": ["seguranca", "qualidade", "release", "lgpd", "protocolo"]
+}

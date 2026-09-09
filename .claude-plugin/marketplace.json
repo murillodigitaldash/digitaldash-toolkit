@@ -1,0 +1,14 @@
+{
+  "name": "digitaldash",
+  "owner": {
+    "name": "Digital Dash",
+    "email": "murillo@digitaldash.info"
+  },
+  "plugins": [
+    {
+      "name": "dd",
+      "source": "./plugins/dd",
+      "description": "Protocolo de performance e protecao de sistemas da Digital Dash"
+    }
+  ]
+}

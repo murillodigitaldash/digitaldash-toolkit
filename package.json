@@ -1,0 +1,13 @@
+{
+  "name": "digitaldash-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/",
+    "validate": "node scripts/validate-checks.mjs"
+  },
+  "devDependencies": {
+    "yaml": "^2.6.1"
+  }
+}
