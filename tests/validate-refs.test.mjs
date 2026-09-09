@@ -68,6 +68,15 @@ test('conta zero quando nao ha ponteiro interno', () => {
   assert.equal(verificadas, 0)
 })
 
+test('caminho interno com ponto nao passa por resolucao relativa', () => {
+  const arquivos = new Map([
+    ['checks/secrets.md', 'o manifesto vive em `.claude-plugin/plugin.json`']
+  ])
+  const vistos = []
+  validarReferencias(arquivos, (alvo) => { vistos.push(alvo); return true })
+  assert.deepEqual(vistos, ['.claude-plugin/plugin.json'])
+})
+
 test('referencia relativa e resolvida antes de checar existencia', () => {
   const arquivos = new Map([['references/etapas/01-higiene.md', 'veja `./02-tipos.md`']])
   const vistos = []

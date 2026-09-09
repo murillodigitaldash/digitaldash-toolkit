@@ -11,6 +11,13 @@ export const DIRS_DO_PLUGIN = [
   '.claude-plugin', 'agents', 'checks', 'ci', 'commands', 'hooks', 'references', 'skills'
 ]
 
+// Um caminho e relativo quando comeca com ./ ou ../ — e so entao. Um nome como
+// `.claude-plugin/plugin.json` comeca com ponto e NAO e relativo: e caminho a
+// partir da raiz do plugin. O predicado mora aqui, num lugar so; foi uma segunda
+// definicao dele ("comeca com ponto") que quebrou exatamente esse caso.
+export const ehRelativa = (caminho) =>
+  caminho.startsWith('./') || caminho.startsWith('../')
+
 export function extrairReferencias(conteudo) {
   const achados = new Set()
   const considerar = (bruto) => {
@@ -19,8 +26,7 @@ export function extrairReferencias(conteudo) {
     if (/^[a-z]+:\/\//.test(caminho)) return
     if (/\s/.test(caminho)) return
     if (caminho.startsWith('/')) return
-    const ehRelativa = caminho.startsWith('./') || caminho.startsWith('../')
-    if (!ehRelativa && !DIRS_DO_PLUGIN.includes(caminho.split('/')[0])) return
+    if (!ehRelativa(caminho) && !DIRS_DO_PLUGIN.includes(caminho.split('/')[0])) return
     achados.add(caminho)
   }
   for (const m of conteudo.matchAll(EM_BACKTICK)) considerar(m[1])
@@ -48,7 +54,7 @@ export function validarReferencias(arquivos, existe) {
   for (const [origem, conteudo] of arquivos) {
     for (const ref of extrairReferencias(conteudo)) {
       verificadas++
-      const alvo = ref.startsWith('.') ? resolverRelativo(origem, ref) : ref
+      const alvo = ehRelativa(ref) ? resolverRelativo(origem, ref) : ref
       if (!existe(alvo)) erros.push(`${origem}: referencia inexistente: ${ref}`)
     }
   }
