@@ -102,3 +102,85 @@ export function validarAncoras(checks, lerGuia) {
 
   return erros
 }
+
+export function validarSemantica(checks) {
+  const erros = []
+  for (const c of checks) {
+    const onde = c?.id ?? 'check sem id'
+    if (c?.bloqueia === true) {
+      if (c?.deteccao?.tipo !== 'comando') {
+        erros.push(`${onde}: bloqueia:true exige deteccao.tipo "comando"`)
+      }
+      if (!Array.isArray(c?.cadencia) || !c.cadencia.includes('pr')) {
+        erros.push(`${onde}: bloqueia:true exige cadencia "pr"`)
+      }
+    }
+    if (c?.deteccao?.tipo === 'comando' && !String(c?.deteccao?.cmd ?? '').trim()) {
+      erros.push(`${onde}: deteccao.tipo "comando" exige deteccao.cmd`)
+    }
+    if (c?.deteccao?.tipo === 'julgamento' && c?.deteccao?.cmd) {
+      erros.push(`${onde}: deteccao.tipo "julgamento" nao aceita cmd`)
+    }
+  }
+  return erros
+}
+
+export function validarExcecoes(config, idsConhecidos, hoje = new Date()) {
+  const erros = []
+  for (const e of config?.excecoes ?? []) {
+    const onde = `excecao ${e?.id ?? '(sem id)'}`
+    if (!e?.id) erros.push(`${onde}: campo id ausente`)
+    else if (!idsConhecidos.has(e.id)) erros.push(`${onde}: id nao existe no registry`)
+    if (!e?.motivo) erros.push(`${onde}: campo motivo ausente`)
+    if (!e?.expira) {
+      erros.push(`${onde}: campo expira ausente`)
+      continue
+    }
+    const prazo = new Date(`${e.expira}T23:59:59Z`)
+    if (Number.isNaN(prazo.getTime())) erros.push(`${onde}: expira invalido: ${e.expira}`)
+    else if (prazo < hoje) erros.push(`${onde}: expirou em ${e.expira}`)
+  }
+  return erros
+}
+
+export function validarTudo({ checks, lerGuia, config = null, hoje = new Date() }) {
+  const erros = [
+    ...validarSchema(checks),
+    ...validarAncoras(checks, lerGuia),
+    ...validarSemantica(checks)
+  ]
+  if (config) {
+    erros.push(...validarExcecoes(config, new Set(checks.map((c) => c?.id)), hoje))
+  }
+  return erros
+}
+
+// Executado como CLI? Comparar caminhos reais, nunca as URLs cruas:
+// import.meta.url vem percent-encoded e com symlink resolvido, enquanto
+// process.argv[1] vem literal. Comparar as strings direto falha em qualquer
+// caminho com espaco — e o repositorio deste plugin tem um.
+const ehCli = process.argv[1] && await (async () => {
+  const { realpathSync } = await import('node:fs')
+  const { fileURLToPath } = await import('node:url')
+  return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)
+})()
+
+if (ehCli) {
+  const { readFileSync } = await import('node:fs')
+  const { fileURLToPath } = await import('node:url')
+  const { dirname, join } = await import('node:path')
+  const { parse } = await import('yaml')
+
+  const raiz = join(dirname(fileURLToPath(import.meta.url)), '..')
+  const baseChecks = join(raiz, 'plugins', 'dd')
+  const checks = parse(readFileSync(join(baseChecks, 'checks', 'registry.yaml'), 'utf8'))
+  const lerGuia = (caminho) => readFileSync(join(baseChecks, caminho), 'utf8')
+
+  const erros = validarTudo({ checks, lerGuia })
+  if (erros.length > 0) {
+    console.error(`${erros.length} problema(s) no nucleo de checks:\n`)
+    for (const e of erros) console.error(`  - ${e}`)
+    process.exit(1)
+  }
+  console.log(`nucleo de checks valido: ${checks.length} checks`)
+}
