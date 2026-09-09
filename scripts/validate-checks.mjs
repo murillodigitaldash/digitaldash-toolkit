@@ -5,7 +5,10 @@ export const DOMINIOS = ['secrets', 'dependencias', 'logs', 'lgpd', 'tenant', 'i
 export const CAMPOS_OBRIGATORIOS = [
   'id', 'titulo', 'dominio', 'severidade', 'cadencia', 'bloqueia', 'stacks', 'deteccao', 'guia'
 ]
-export const PADRAO_ID = /^[A-Z]+(-[A-Z]+)*-\d{3}$/
+// Forma canonica de um id do nucleo. PADRAO_ID e PADRAO_CABECALHO derivam
+// desta constante: a forma de um id tem UMA definicao no projeto.
+const NUCLEO_ID = '[A-Z]+(?:-[A-Z]+)*-\\d{3}'
+export const PADRAO_ID = new RegExp(`^${NUCLEO_ID}$`)
 
 export function validarSchema(checks) {
   const erros = []
@@ -58,7 +61,7 @@ export function validarSchema(checks) {
   return erros
 }
 
-const PADRAO_CABECALHO = /^###\s+([A-Z]+(?:-[A-Z]+)*-\d{3})\b/gm
+const PADRAO_CABECALHO = new RegExp(`^###\\s+(${NUCLEO_ID})\\b`, 'gm')
 
 export function validarAncoras(checks, lerGuia) {
   const erros = []
