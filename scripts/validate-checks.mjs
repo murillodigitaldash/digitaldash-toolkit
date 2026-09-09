@@ -57,3 +57,45 @@ export function validarSchema(checks) {
 
   return erros
 }
+
+const PADRAO_CABECALHO = /^###\s+([A-Z]+(?:-[A-Z]+)*-\d{3})\b/gm
+
+export function validarAncoras(checks, lerGuia) {
+  const erros = []
+  const porArquivo = new Map()
+
+  for (const c of checks) {
+    if (!c?.id || !c?.guia) continue
+    const [arquivo, ancora] = String(c.guia).split('#')
+    if (!ancora) {
+      erros.push(`${c.id}: guia sem ancora (esperado ${arquivo}#${c.id.toLowerCase()})`)
+      continue
+    }
+    if (ancora !== c.id.toLowerCase()) {
+      erros.push(`${c.id}: ancora do guia deveria ser #${c.id.toLowerCase()}, veio #${ancora}`)
+    }
+    if (!porArquivo.has(arquivo)) porArquivo.set(arquivo, new Set())
+    porArquivo.get(arquivo).add(c.id)
+  }
+
+  for (const [arquivo, ids] of porArquivo) {
+    let conteudo
+    try {
+      conteudo = lerGuia(arquivo)
+    } catch {
+      erros.push(`guia ausente: ${arquivo}`)
+      continue
+    }
+    const cabecalhos = new Set(
+      [...conteudo.matchAll(PADRAO_CABECALHO)].map((m) => m[1])
+    )
+    for (const id of ids) {
+      if (!cabecalhos.has(id)) erros.push(`${id}: sem bloco "### ${id}" em ${arquivo}`)
+    }
+    for (const cab of cabecalhos) {
+      if (!ids.has(cab)) erros.push(`${cab}: bloco em ${arquivo} sem entrada no registry`)
+    }
+  }
+
+  return erros
+}
