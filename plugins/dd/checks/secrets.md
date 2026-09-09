@@ -3,11 +3,13 @@
 Guia de julgamento do dominio `secrets`. Cada bloco corresponde a uma entrada
 de `registry.yaml` com o mesmo id.
 
-### SEC-001 — Secret hardcoded em codigo-fonte
+### SEC-001 — Secret hardcoded em código-fonte
 
 **Por que existe:** uma credencial em código-fonte vaza junto com o código —
 em fork, em backup, em screenshot, no cache do CI. Uma vez publicada,
-considere-a comprometida.
+considere-a comprometida. O comando de detecção segue a convenção do
+`gitleaks`: sai com código 0 quando nada é encontrado (limpo) e com código
+diferente de zero quando encontra pelo menos um segredo.
 
 **Falsos positivos conhecidos:** chaves públicas, exemplos em documentação
 com valor obviamente fictício, fixtures de teste com valor gerado. Nesses
@@ -26,7 +28,9 @@ do cofre.
 **Por que existe:** um `.env` versionado carrega credenciais de todos os
 ambientes (dev, staging, produção) para dentro do histórico do repositório,
 exposto a qualquer pessoa com acesso de leitura ao código — inclusive clones
-antigos e forks.
+antigos e forks. O comando de detecção sai com código 0 quando pelo menos um
+desses arquivos perigosos está rastreado pelo git, e com código 1 quando
+nenhum está.
 
 **Falsos positivos conhecidos:** arquivos `.env.example` ou `.env.sample`
 com placeholders (`DATABASE_URL=<preencher>`) não são o problema — são
@@ -41,11 +45,14 @@ o `.gitignore` sem rotacionar as credenciais. O arquivo sai do HEAD, mas todo
 valor que ele continha ainda é lido a partir do histórico do git e continua
 válido até ser trocado no provedor.
 
-### SEC-003 — Chave privada no repositorio
+### SEC-003 — Chave privada no repositório
 
 **Por que existe:** uma chave privada (SSH, TLS, assinatura de release,
 service account) commitada dá acesso direto e reproduzível a quem clonar o
-repositório — não depende de adivinhar nada, é a chave inteira.
+repositório — não depende de adivinhar nada, é a chave inteira. O comando de
+detecção segue a convenção do `grep`: sai com código 0 quando encontra ao
+menos um arquivo com o padrão de chave privada (achado, portanto perigoso) e
+com código diferente de zero quando não encontra nenhum.
 
 **Falsos positivos conhecidos:** chaves geradas especificamente para
 fixtures de teste, que nunca autenticam nada real (por exemplo, uma chave
@@ -63,14 +70,16 @@ A chave privada não muda de valor por sair do HEAD — se alguém já clonou o
 repositório (inclusive um clone abandonado, um fork, um cache de CI) a chave
 antiga continua funcionando até ser revogada do lado do serviço.
 
-### SEC-004 — Secret presente no historico do git
+### SEC-004 — Secret presente no histórico do git
 
 **Por que existe:** um secret já removido do HEAD, mas não do histórico,
 continua recuperável por qualquer pessoa com `git log -p` ou
 `git show <commit-antigo>` — a exclusão no HEAD dá uma falsa sensação de que
 o problema foi resolvido. Este check varre o histórico inteiro (sem
 `--no-git`), por isso roda só nas cadências mais lentas (pr, release,
-postura), nunca em hook.
+postura), nunca em hook. Assim como o SEC-001, o comando sai com código 0
+quando o histórico está limpo e com código diferente de zero quando encontra
+pelo menos um segredo nele.
 
 **Falsos positivos conhecidos:** repositórios que já passaram por uma
 reescrita de histórico completa (`git filter-repo` seguido de force-push
@@ -88,7 +97,7 @@ credencial. Enquanto a chave antiga continuar válida no provedor, qualquer
 cópia do repositório feita antes do force-push (clone local de alguém do
 time, mirror, backup) ainda a expõe.
 
-### SEC-005 — Valor sensivel em variavel de prefixo publico
+### SEC-005 — Valor sensível em variável de prefixo público
 
 **Por que existe:** frameworks como Next.js, Vite, Create React App e Expo
 embutem no bundle do cliente qualquer variável de ambiente com prefixo
@@ -96,7 +105,10 @@ público (`NEXT_PUBLIC_`, `VITE_`, `REACT_APP_`, `EXPO_PUBLIC_`) — o valor vai
 parar em texto plano no JavaScript servido ao navegador, visível a qualquer
 usuário pelo devtools. Um nome de variável com "SECRET", "KEY", "TOKEN" etc.
 sob esse prefixo é quase sempre um erro de quem pretendia uma variável
-server-side.
+server-side. O comando de detecção segue a convenção do `grep`: sai com
+código 0 quando encontra ao menos uma linha correspondente (achado,
+portanto perigoso) e com código diferente de zero quando não encontra
+nenhuma.
 
 **Falsos positivos conhecidos:** chaves desenhadas para serem públicas por
 natureza (por exemplo `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`,
@@ -137,7 +149,7 @@ código sem tratar os logs já emitidos. A credencial já está nos agregadores
 e em qualquer export/backup deles — o log em si sobrevive ao deploy que
 "corrigiu" o código.
 
-### SEC-007 — Secret sem rotacao documentada
+### SEC-007 — Secret sem rotação documentada
 
 **Por que existe:** um secret sem política de rotação definida costuma nunca
 ser trocado — na prática vira permanente, e quanto mais tempo um valor fica
@@ -161,7 +173,7 @@ deixar a política documentada. Sem um dono e uma cadência registrados, a
 próxima rotação depende de alguém lembrar — o problema volta assim que a
 pessoa que rotacionou sai do time ou esquece.
 
-### SEC-008 — Ausencia de cofre de segredos
+### SEC-008 — Ausência de cofre de segredos
 
 **Por que existe:** sem um cofre central (Vault, AWS Secrets Manager,
 Doppler, 1Password for Teams etc.), segredos acabam espalhados em `.env`

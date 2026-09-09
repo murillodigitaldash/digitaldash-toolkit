@@ -1,14 +1,17 @@
-# Dependencias
+# Dependências
 
 Guia de julgamento do dominio `dependencias`. Cada bloco corresponde a uma
 entrada de `registry.yaml` com o mesmo id.
 
-### DEP-001 — Dependencia com CVE critico ou alto com correcao disponivel
+### DEP-001 — Dependência com CVE crítico ou alto com correção disponível
 
 **Por que existe:** uma vulnerabilidade crítica ou alta com correção já
 publicada é o caso mais barato de resolver e o mais caro de ignorar — o
 exploit é conhecido publicamente (a CVE está documentada) e a única coisa
-entre o projeto e o problema é rodar a atualização.
+entre o projeto e o problema é rodar a atualização. O `jq -e` segue a
+convenção de sair com código 0 quando o filtro é verdadeiro — ou seja,
+quando existe ao menos uma vulnerabilidade crítica ou alta com correção
+disponível — e com código diferente de zero quando a lista está vazia.
 
 **Falsos positivos conhecidos:** a vulnerabilidade está em um caminho de
 código que o projeto nunca exercita (uma dependência de build-time, ou uma
@@ -33,7 +36,10 @@ vulnerabilidade reportada" e quebrado em produção ao mesmo tempo.
 servidor de produção) podem resolver árvores de dependências diferentes para
 o mesmo código — quebrando a garantia mais básica de reprodutibilidade e
 abrindo espaço para uma dependência maliciosa entrar por um range de versão
-amplo demais.
+amplo demais. Ao contrário dos comandos baseados em grep/jq deste núcleo, o
+`npm ci --dry-run` segue a convenção padrão de ferramentas de build: sai com
+código 0 quando o lockfile está sincronizado com o manifest e com código
+diferente de zero quando está ausente ou dessincronizado.
 
 **Falsos positivos conhecidos:** repositórios que publicam deliberadamente
 uma biblioteca (não uma aplicação) costumam não versionar lockfile — é
@@ -51,7 +57,7 @@ reflete exatamente o `package.json`. Um lockfile presente mas dessincronizado
 passa numa checagem ingênua de "o arquivo existe" e falha exatamente na
 garantia que deveria dar.
 
-### DEP-003 — CVE critico ou alto sem correcao disponivel
+### DEP-003 — CVE crítico ou alto sem correção disponível
 
 **Por que existe:** quando não há correção publicada, atualizar não resolve
 — a decisão vira sobre mitigação (isolar o componente vulnerável, desabilitar
@@ -75,12 +81,16 @@ reavaliação, ou sem uma mitigação real. Uma exceção sem prazo vira
 permanente, e uma exceção sem mitigação é só a ausência de correção anotada,
 não um risco tratado.
 
-### DEP-004 — Dependencia abandonada
+### DEP-004 — Dependência abandonada
 
 **Por que existe:** uma dependência sem atividade de manutenção não recebe
 correção quando uma vulnerabilidade for descoberta nela — o risco não é o
 estado atual da lib, é a ausência de alguém do outro lado para corrigir o
-próximo problema.
+próximo problema. Este comando apenas coleta evidência — as datas de última
+publicação de cada dependência direta — e sempre sai com código 0
+independentemente do resultado; ele não funciona como um portão de
+aprovação/reprovação, a decisão sobre abandono cabe ao julgamento humano
+lendo a saída.
 
 **Falsos positivos conhecidos:** bibliotecas pequenas e estáveis, cuja
 superfície de API não muda (um formatter de data, um utilitário de string),
@@ -97,13 +107,16 @@ manutenção, documentando a decisão.
 biblioteca ou assumir manutenção. Isso apenas esconde o check — não muda o
 fato de que ninguém vai corrigir a próxima vulnerabilidade encontrada nela.
 
-### DEP-005 — SBOM nao gerado no release
+### DEP-005 — SBOM não gerado no release
 
 **Por que existe:** sem um SBOM (Software Bill of Materials) gerado a cada
 release, não existe um registro auditável de exatamente quais dependências
 — e em que versão — compõem aquele artefato específico. Quando uma CVE nova
 é anunciada meses depois, não dá para responder rápido "quais dos nossos
-releases publicados são afetados" sem ele.
+releases publicados são afetados" sem ele. O comando sai com código 0 quando
+o SBOM é gerado com sucesso e com código diferente de zero quando a geração
+falha — a mesma convenção de 0 = sucesso usada por ferramentas de build como
+o `npm ci`.
 
 **Falsos positivos conhecidos:** releases de hotfix que não alteram nenhuma
 dependência podem reaproveitar o SBOM do release anterior sem regenerar,
@@ -142,7 +155,7 @@ deploy, por exemplo) e deixar outro (o de testes de PR, por exemplo) ainda
 usando `npm install`. Um pipeline não reprodutível já quebra a garantia que
 o check busca, mesmo que os demais estejam corretos.
 
-### DEP-007 — Pacote com sinal de typosquatting ou mantenedor unico
+### DEP-007 — Pacote com sinal de typosquatting ou mantenedor único
 
 **Por que existe:** ataques de cadeia de suprimento costumam publicar um
 pacote com nome parecido a um popular, ou assumir o controle da conta de um

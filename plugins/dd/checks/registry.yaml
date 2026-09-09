@@ -23,7 +23,7 @@
   stacks: ["*"]
   deteccao:
     tipo: comando
-    cmd: git ls-files --error-unmatch .env .env.local .env.production 2>/dev/null
+    cmd: git ls-files -- .env .env.local .env.production | grep -q .
   guia: checks/secrets.md#sec-002
 
 - id: SEC-003
