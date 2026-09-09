@@ -2,6 +2,15 @@ const EXTENSOES = /\.(md|ya?ml|json|mjs|sh)$/
 const EM_BACKTICK = /`([^`\n]+)`/g
 const EM_LINK = /\[[^\]]*\]\(([^)]+)\)/g
 
+// Diretorios de topo do plugin. Uma referencia cujo primeiro segmento e um
+// destes aponta para DENTRO do plugin e precisa resolver. Qualquer outro nome
+// — `CLAUDE.md`, `settings.json`, `registry.yaml`, `.dd/config.yml` — e o guia
+// nomeando artefato do projeto AUDITADO, que nunca existe aqui dentro.
+// Lista explicita em vez de heuristica: heuristica silencia sem avisar.
+export const DIRS_DO_PLUGIN = [
+  '.claude-plugin', 'agents', 'checks', 'ci', 'commands', 'hooks', 'references', 'skills'
+]
+
 export function extrairReferencias(conteudo) {
   const achados = new Set()
   const considerar = (bruto) => {
@@ -9,16 +18,9 @@ export function extrairReferencias(conteudo) {
     if (!EXTENSOES.test(caminho)) return
     if (/^[a-z]+:\/\//.test(caminho)) return
     if (/\s/.test(caminho)) return
-    // Caminhos absolutos e iniciados por ponto sao do projeto alvo, nao do
-    // plugin: `.dd/config.yml` e `.protocolo/<stamp>/report.md` sao citados
-    // na documentacao mas nunca existem dentro de plugins/dd.
-    if (caminho.startsWith('/') || caminho.startsWith('.')) return
-    // Exigir barra e o que separa ponteiro de prosa. `references/etapas/01.md`
-    // aponta para dentro do plugin e precisa resolver; `CLAUDE.md`,
-    // `settings.json` e `package.json` sao artefatos do projeto AUDITADO, que os
-    // guias nomeiam de proposito e que nunca existirao aqui dentro. Nome nu em
-    // crase e prosa citando um arquivo, nao um link.
-    if (!caminho.includes('/')) return
+    if (caminho.startsWith('/')) return
+    const ehRelativa = caminho.startsWith('./') || caminho.startsWith('../')
+    if (!ehRelativa && !DIRS_DO_PLUGIN.includes(caminho.split('/')[0])) return
     achados.add(caminho)
   }
   for (const m of conteudo.matchAll(EM_BACKTICK)) considerar(m[1])
@@ -26,14 +28,31 @@ export function extrairReferencias(conteudo) {
   return [...achados]
 }
 
+// Resolve `./x` e `../x` contra o diretorio do arquivo que cita, sem depender
+// de node:path — assim o teste continua sem tocar disco.
+export function resolverRelativo(origem, ref) {
+  const partes = origem.split('/').slice(0, -1)
+  for (const seg of ref.split('/')) {
+    if (seg === '.' || seg === '') continue
+    if (seg === '..') partes.pop()
+    else partes.push(seg)
+  }
+  return partes.join('/')
+}
+
+// Devolve { erros, verificadas }. A contagem existe para que "zero referencias
+// verificadas" apareca no relatorio em vez de se disfarcar de sucesso.
 export function validarReferencias(arquivos, existe) {
   const erros = []
+  let verificadas = 0
   for (const [origem, conteudo] of arquivos) {
     for (const ref of extrairReferencias(conteudo)) {
-      if (!existe(ref)) erros.push(`${origem}: referencia inexistente: ${ref}`)
+      verificadas++
+      const alvo = ref.startsWith('.') ? resolverRelativo(origem, ref) : ref
+      if (!existe(alvo)) erros.push(`${origem}: referencia inexistente: ${ref}`)
     }
   }
-  return erros
+  return { erros, verificadas }
 }
 
 // Executado como CLI? Comparar caminhos reais, nunca as URLs cruas:
@@ -64,11 +83,16 @@ if (ehCli) {
   }
   varrer(base)
 
-  const erros = validarReferencias(arquivos, (ref) => existsSync(join(base, ref)))
+  const { erros, verificadas } = validarReferencias(
+    arquivos, (ref) => existsSync(join(base, ref))
+  )
   if (erros.length > 0) {
     console.error(`${erros.length} referencia(s) quebrada(s):\n`)
     for (const e of erros) console.error(`  - ${e}`)
     process.exit(1)
   }
-  console.log(`referencias validas em ${arquivos.size} arquivos`)
+  console.log(
+    `referencias: ${verificadas} verificada(s) em ${arquivos.size} arquivo(s)` +
+    (verificadas === 0 ? ' — nenhum ponteiro interno ainda' : '')
+  )
 }
