@@ -374,3 +374,126 @@
   deteccao:
     tipo: julgamento
   guia: checks/lgpd.md#lgpd-s-005
+
+- id: TEN-001
+  titulo: Filtro de tenant derivado de parametro da requisicao
+  dominio: tenant
+  severidade: critica
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/tenant.md#ten-001
+
+- id: TEN-002
+  titulo: Rota sem filtro de tenant
+  dominio: tenant
+  severidade: critica
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/tenant.md#ten-002
+
+- id: TEN-003
+  titulo: Chave de tenant sem convencao unica no codigo
+  dominio: tenant
+  severidade: media
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: grep -rhoE "\b[a-z_]*(_id|Id)\b" {{dir_rotas}} | sort | uniq -c | sort -rn
+  guia: checks/tenant.md#ten-003
+
+- id: TEN-004
+  titulo: Tabela com dado de tenant sem politica de acesso por linha
+  dominio: tenant
+  severidade: critica
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: grep -rqE "_id\s+(uuid|integer|bigint|serial)" --include="*.sql" . && ! grep -rqi "enable row level security" --include="*.sql" .
+  guia: checks/tenant.md#ten-004
+
+- id: TEN-005
+  titulo: Papel de acesso cruzado sem verificacao de vinculo
+  dominio: tenant
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/tenant.md#ten-005
+
+- id: TEN-006
+  titulo: Teste de regressao de isolamento ausente
+  dominio: tenant
+  severidade: alta
+  cadencia: [release]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/tenant.md#ten-006
+
+- id: AI-001
+  titulo: Servidor MCP declarado sem inventario de acesso
+  dominio: ia
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/ia.md#ai-001
+
+- id: AI-002
+  titulo: Plugin ou skill de terceiro sem versao fixada
+  dominio: ia
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/ia.md#ai-002
+
+- id: AI-003
+  titulo: Permissoes amplas em settings local do agente
+  dominio: ia
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/ia.md#ai-003
+
+- id: AI-004
+  titulo: Secret alcancavel pelo agente sem necessidade
+  dominio: ia
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/ia.md#ai-004
+
+- id: AI-005
+  titulo: Artefato de agente versionado sem revisao
+  dominio: ia
+  severidade: media
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/ia.md#ai-005
