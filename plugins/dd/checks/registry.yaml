@@ -1,0 +1,177 @@
+# Nucleo de checks da Digital Dash.
+# Fonte legivel por maquina. O julgamento humano mora em checks/<dominio>.md.
+# Regras validadas por scripts/validate-checks.mjs.
+
+- id: SEC-001
+  titulo: Secret hardcoded em codigo-fonte
+  dominio: secrets
+  severidade: critica
+  cadencia: [hook, pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: gitleaks detect --no-git --redact --report-format json
+  guia: checks/secrets.md#sec-001
+
+- id: SEC-002
+  titulo: Arquivo .env versionado ou fora do .gitignore
+  dominio: secrets
+  severidade: critica
+  cadencia: [hook, pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: git ls-files --error-unmatch .env .env.local .env.production 2>/dev/null
+  guia: checks/secrets.md#sec-002
+
+- id: SEC-003
+  titulo: Chave privada no repositorio
+  dominio: secrets
+  severidade: critica
+  cadencia: [hook, pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: "git grep -IlE -e \"-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----\" -- ."
+  guia: checks/secrets.md#sec-003
+
+- id: SEC-004
+  titulo: Secret presente no historico do git
+  dominio: secrets
+  severidade: critica
+  cadencia: [pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: gitleaks detect --redact --report-format json
+  guia: checks/secrets.md#sec-004
+
+- id: SEC-005
+  titulo: Valor sensivel em variavel de prefixo publico
+  dominio: secrets
+  severidade: critica
+  cadencia: [hook, pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: "grep -RIEn \"^(NEXT_PUBLIC_|VITE_|REACT_APP_|EXPO_PUBLIC_)[A-Z0-9_]*(SECRET|TOKEN|SENHA|PASSWORD|PRIVATE|CHAVE)[A-Z0-9_]*=\" --include=\".env*\" ."
+  guia: checks/secrets.md#sec-005
+
+- id: SEC-006
+  titulo: Credencial impressa em log
+  dominio: secrets
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/secrets.md#sec-006
+
+- id: SEC-007
+  titulo: Secret sem rotacao documentada
+  dominio: secrets
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/secrets.md#sec-007
+
+- id: SEC-008
+  titulo: Ausencia de cofre de segredos
+  dominio: secrets
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/secrets.md#sec-008
+
+- id: DEP-001
+  titulo: Dependencia com CVE critico ou alto com correcao disponivel
+  dominio: dependencias
+  severidade: critica
+  cadencia: [pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: "npm audit --omit=dev --json | jq -e '[.vulnerabilities[] | select((.severity==\"high\" or .severity==\"critical\") and .fixAvailable != false)] | length > 0'"
+  guia: checks/dependencias.md#dep-001
+
+- id: DEP-002
+  titulo: Lockfile ausente ou dessincronizado do manifest
+  dominio: dependencias
+  severidade: alta
+  cadencia: [pr, release, postura]
+  bloqueia: true
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: npm ci --dry-run
+  guia: checks/dependencias.md#dep-002
+
+- id: DEP-003
+  titulo: CVE critico ou alto sem correcao disponivel
+  dominio: dependencias
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/dependencias.md#dep-003
+
+- id: DEP-004
+  titulo: Dependencia abandonada
+  dominio: dependencias
+  severidade: media
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: "npm ls --omit=dev --depth=0 --json | jq -r '.dependencies | keys[]' | xargs -I{} npm view {} time.modified"
+  guia: checks/dependencias.md#dep-004
+
+- id: DEP-005
+  titulo: SBOM nao gerado no release
+  dominio: dependencias
+  severidade: media
+  cadencia: [release]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: npx @cyclonedx/cyclonedx-npm --output-file sbom.json
+  guia: checks/dependencias.md#dep-005
+
+- id: DEP-006
+  titulo: Pipeline instalando sem npm ci
+  dominio: dependencias
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/dependencias.md#dep-006
+
+- id: DEP-007
+  titulo: Pacote com sinal de typosquatting ou mantenedor unico
+  dominio: dependencias
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/dependencias.md#dep-007
