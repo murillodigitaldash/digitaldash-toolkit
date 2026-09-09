@@ -171,26 +171,33 @@ query administrativa, um script de manutenção, uma migração de dados
 malfeita) que esqueça o filtro já expõe a tabela inteira entre tenants,
 sem nenhuma rede de segurança abaixo dela.
 
-O comando testa um sinal de todo o repositório, não tabela por tabela: ele
-sai com código **0 quando existe pelo menos uma tabela com coluna típica de
-chave (`_id` do tipo `uuid`/`integer`/`bigint`/`serial`) e nenhuma instrução
-`ENABLE ROW LEVEL SECURITY` em lugar nenhum das migrações** — achado,
-portanto violação. Sai com código diferente de zero em dois casos
-distintos: nenhuma tabela com esse formato de coluna foi encontrada (nada a
-proteger, check não se aplica), ou ao menos uma instrução de RLS já existe
-em algum lugar do projeto. Esse segundo caso é só um sinal parcial —
-leia com cuidado a seção "O que NAO conta como resolvido" antes de tratar
-uma saída diferente de zero como "resolvido".
+Este comando apenas coleta evidência — ele não decide nada. Imprime duas
+listas e sempre sai com código **0**, independentemente do que encontrar:
+"tabelas", toda tabela criada por um `CREATE TABLE` em qualquer arquivo
+`.sql` do projeto; e "RLS habilitado", toda tabela alvo de um
+`ALTER TABLE ... ENABLE ROW LEVEL SECURITY`. Ele não funciona como um
+portão de aprovação/reprovação — comparar as duas listas e nomear as
+tabelas que aparecem na primeira e não na segunda é trabalho do agente
+lendo a saída, não do exit code. Um comando booleano aqui seria pior que
+nenhum comando: a forma óbvia de decidir isso automaticamente (existe
+tabela com formato de chave de tenant E não existe RLS em lugar nenhum)
+tem granularidade de repositório, não de tabela — um único
+`ENABLE ROW LEVEL SECURITY` em qualquer arquivo do projeto silenciaria um
+check `critica` sobre cobertura por tabela.
 
-**Falsos positivos conhecidos:** assim como no `TEN-003`, uma coluna `_id`
-pode ser só uma chave estrangeira comum para uma tabela de referência
-compartilhada (`partido_id` apontando para uma lista global de partidos) —
-não é, por si só, dado com escopo de tenant e não precisa de RLS. O mesmo
-vale para uma tabela genuinamente global/sem tenant (municípios, cargos
-eletivos) que tenha alguma coluna `_id` por outro motivo. E projetos cujo
-banco não é Postgres/Supabase simplesmente não têm RLS como recurso — nesse
-caso a proteção de isolamento por linha não é aplicável por este mecanismo
-específico, e a garantia recai inteiramente sobre `TEN-001`/`TEN-002`.
+**Falsos positivos conhecidos:** uma tabela que aparece na lista
+"tabelas" pode não guardar dado de tenant nenhum — uma tabela de
+referência/lookup compartilhada entre todas as campanhas (lista global de
+partidos, lista de cargos eletivos, municípios) ou uma tabela de
+bookkeeping da própria infraestrutura de migração (a tabela de controle de
+versão do schema, por exemplo). Essas tabelas legitimamente não precisam
+de política por linha, e sua ausência na lista "RLS habilitado" não é, por
+si só, uma violação — é o agente, olhando o schema, quem decide se a
+tabela guarda dado de campanha ou não antes de cobrá-la. E projetos cujo
+banco não é Postgres/Supabase simplesmente não têm RLS como recurso —
+nesse caso a proteção de isolamento por linha não é aplicável por este
+mecanismo específico, e a garantia recai inteiramente sobre
+`TEN-001`/`TEN-002`.
 
 **Como remediar:** para toda tabela que armazena dado com escopo de uma
 única campanha/tenant, `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;` mais ao
@@ -201,17 +208,19 @@ Supabase) — RLS como defesa em profundidade complementar ao filtro de
 aplicação, nunca como substituto dele.
 
 **O que NAO conta como resolvido:** habilitar `ENABLE ROW LEVEL SECURITY`
-sem criar nenhuma política de fato, ou criar uma política com
-`USING (true)` "para destravar a aplicação" — o primeiro caso deixa a
-tabela em negação total (frequentemente contornado adicionando a política
-permissiva, que é o segundo caso), e o segundo deixa a tabela tão exposta
-quanto sem RLS nenhum, só que com a aparência de estar protegida. Também
-não conta o comando sair diferente de zero por já existir RLS em *alguma*
-tabela do projeto: esse é um sinal de repositório inteiro, não uma prova
-por tabela — o estado realmente limpo exige levantar todas as tabelas com
-dado de tenant (cruzando com a evidência do `TEN-003`) e confirmar,
-individualmente, que cada uma tem RLS habilitado **e** uma política que
-filtra de fato.
+sem criar nenhuma política de fato deixa a tabela em negação total — trava
+o acesso em vez de protegê-lo, o que costuma ser "corrigido" adicionando
+uma política `USING (true)` para destravar a aplicação, que é igualmente
+falho: deixa a tabela tão exposta quanto sem RLS nenhum, só que com
+aparência de estar protegida. Também não conta habilitar RLS em algumas
+das tabelas com dado de tenant enquanto a comparação entre as duas listas
+ainda mostra outras descobertas — isso não é remediação, é um passe
+parcial com aparência de concluído. E não conta tratar a saída deste
+comando como um veredito: ele sempre sai com código 0, sucesso ou não —
+o estado realmente limpo exige levantar todas as tabelas com dado de
+tenant (cruzando com a evidência do `TEN-003` e descartando as exceções da
+seção acima) e confirmar, individualmente, que cada uma tem RLS habilitado
+**e** uma política que filtra de fato.
 
 ### TEN-005 — Papel de acesso cruzado sem verificação de vínculo
 

@@ -418,7 +418,7 @@
   stacks: ["*"]
   deteccao:
     tipo: comando
-    cmd: grep -rqE "_id\s+(uuid|integer|bigint|serial)" --include="*.sql" . && ! grep -rqi "enable row level security" --include="*.sql" .
+    cmd: '{ echo "== tabelas =="; grep -rhoiE "create table (if not exists )?[\"a-z_.]+" --include="*.sql" . | sort -u; echo "== RLS habilitado =="; grep -rhoiE "alter table [\"a-z_.]+ enable row level security" --include="*.sql" . | sort -u; } 2>/dev/null; true'
   guia: checks/tenant.md#ten-004
 
 - id: TEN-005
