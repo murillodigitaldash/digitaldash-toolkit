@@ -175,3 +175,202 @@
   deteccao:
     tipo: julgamento
   guia: checks/dependencias.md#dep-007
+
+- id: LOG-001
+  titulo: Eventos de autenticacao nao logados
+  dominio: logs
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/logs.md#log-001
+
+- id: LOG-002
+  titulo: PII bruta em log
+  dominio: logs
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/logs.md#log-002
+
+- id: LOG-003
+  titulo: Logs nao estruturados em producao
+  dominio: logs
+  severidade: media
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: comando
+    cmd: 'grep -RIlE "console\.(log|info|warn|error|debug)\(" --include="*.js" --include="*.ts" --include="*.jsx" --include="*.tsx" --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=build .'
+  guia: checks/logs.md#log-003
+
+- id: LOG-004
+  titulo: Ausencia de correlacao por request ou trace id
+  dominio: logs
+  severidade: media
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/logs.md#log-004
+
+- id: LOG-005
+  titulo: Retencao de logs abaixo de 90 dias
+  dominio: logs
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/logs.md#log-005
+
+- id: LOG-006
+  titulo: Mudanca de permissao sem trilha de auditoria
+  dominio: logs
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/logs.md#log-006
+
+- id: LGPD-001
+  titulo: PII nao mapeada
+  dominio: lgpd
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-001
+
+- id: LGPD-002
+  titulo: Politica de retencao nao implementada
+  dominio: lgpd
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-002
+
+- id: LGPD-003
+  titulo: Mecanismo de exclusao do titular ausente
+  dominio: lgpd
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-003
+
+- id: LGPD-004
+  titulo: Direito de acesso e portabilidade ausente
+  dominio: lgpd
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-004
+
+- id: LGPD-005
+  titulo: Ambiente nao produtivo com dado real
+  dominio: lgpd
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-005
+
+- id: LGPD-006
+  titulo: Sub-processadores nao listados
+  dominio: lgpd
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-006
+
+- id: LGPD-007
+  titulo: Plano de resposta a incidente de dados ausente
+  dominio: lgpd
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-007
+
+- id: LGPD-S-001
+  titulo: Dado sensivel sem base legal do art. 11 documentada
+  dominio: lgpd
+  severidade: critica
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-s-001
+
+- id: LGPD-S-002
+  titulo: Consentimento especifico e destacado ausente
+  dominio: lgpd
+  severidade: alta
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-s-002
+
+- id: LGPD-S-003
+  titulo: Dado sensivel sem minimizacao por finalidade
+  dominio: lgpd
+  severidade: alta
+  cadencia: [release, postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-s-003
+
+- id: LGPD-S-004
+  titulo: Compartilhamento de dado sensivel sem contrato
+  dominio: lgpd
+  severidade: critica
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-s-004
+
+- id: LGPD-S-005
+  titulo: Retencao de dado sensivel igual a de dado comum
+  dominio: lgpd
+  severidade: media
+  cadencia: [postura]
+  bloqueia: false
+  stacks: ["*"]
+  deteccao:
+    tipo: julgamento
+  guia: checks/lgpd.md#lgpd-s-005
