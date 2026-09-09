@@ -53,8 +53,15 @@ campanhas cadastradas, usado só pelo time da Digital Dash) não é um caso de
 intencionalmente cross-tenant, controlada por um papel de acesso distinto
 (`TEN-005`), não pelo filtro de tenant em si.
 
-**Como remediar:** trocar a origem do identificador para o token sempre que
-a arquitetura da rota permitir (categoria 1). Quando o identificador
+**Como remediar:** antes de corrigir qualquer rota, monte o inventário que
+a auditoria do `TEN-001` vai percorrer: varra o diretório de rotas por
+registros de roteador (`router.get`, `router.post`, `router.put`,
+`router.patch`, `router.delete` e, para rotas registradas direto no app,
+`app.<método>`) e trate essa lista como o denominador — toda rota que
+existe hoje no roteador, não toda rota tocada no diff atual, o mesmo
+princípio de cobertura que o check já aplica em *O que NAO conta como
+resolvido*. Feito o levantamento, trocar a origem do identificador para o
+token sempre que a arquitetura da rota permitir (categoria 1). Quando o identificador
 precisa mesmo vir de um parâmetro (URLs aninhadas, integrações externas),
 adicionar uma verificação explícita de vínculo antes de qualquer uso — de
 preferência como middleware que roda antes do handler e retorna 403/404 em
@@ -273,12 +280,24 @@ isolamento entre tenants, cada correção de `TEN-001`/`TEN-002`/`TEN-005`
 depende de alguém lembrar de reauditar manualmente a cada mudança — o que,
 na prática, não acontece de forma consistente.
 
-**Falsos positivos conhecidos:** uma suíte de testes de ponta a ponta geral
-que usa duas contas de teste diferentes em testes distintos (por exemplo,
-para testar dois papéis de acesso diferentes) não conta, por si só, como
-cobertura de isolamento — o critério não é "os testes usam mais de um
-tenant nos fixtures", é "algum teste afirma explicitamente que a conta A
-não consegue ler nem escrever dado da conta B".
+**Falsos positivos conhecidos:** um teste cujo nome, `describe` ou arquivo
+não usa nenhuma das palavras "isolamento", "tenant" ou "cross-tenant" pode,
+ainda assim, ser cobertura real — o que importa é o que o corpo do teste
+afirma, não o vocabulário do título. Por exemplo, em um arquivo
+Jest/Supertest chamado `candidatos.spec.js`, um teste declarado como
+`it('retorna 404 para candidato de outra campanha', ...)` dentro de
+`describe('GET /candidatos/:id')`, que provisiona uma segunda campanha só
+para o teste, autentica com o token da campanha principal
+(`Authorization: Bearer ${tokenCampanhaA}`) e faz
+``request(app).get(`/candidatos/${candidatoDaCampanhaB.id}`).expect(404)`` —
+está testando exatamente a negação de acesso cross-tenant que o check
+exige, embora nada no nome do teste sugira isso. Uma auditoria rasa que
+busca por essas três palavras nos arquivos de teste
+(`grep -ri 'isolamento\|tenant\|cross-tenant' **/*.spec.js`) não encontra
+esse teste e conclui, erradamente, que não existe cobertura de isolamento
+— quando ela existe, só está descrita com outro vocabulário. A verificação
+correta exige ler o corpo dos testes que já tocam nos mesmos recursos, não
+só buscar por palavras-chave nos nomes.
 
 **Como remediar:** escrever e manter uma suíte de regressão explícita que,
 para cada tipo de recurso com escopo de tenant, provisione ao menos duas
@@ -287,9 +306,14 @@ tentativa de ler/escrever/listar dado da campanha B (por id direto, por
 endpoint de listagem, por exportação) é rejeitada ou retorna vazio —
 executando essa suíte a cada release.
 
-**O que NAO conta como resolvido:** uma suíte que só reexecuta o caminho
-feliz da correção de UM incidente específico já reportado, em vez de
-iterar sobre o inventário completo de rotas — o mesmo princípio de
-cobertura do `TEN-001`/`TEN-002` (por rota existente, não por incidente já
-corrigido) vale aqui: uma suíte que só retesta o bug de ontem não protege
-as rotas que ainda não quebraram.
+**O que NAO conta como resolvido:** uma suíte de ponta a ponta geral que
+usa duas contas de teste diferentes em testes distintos — por exemplo,
+para testar dois papéis de acesso diferentes — não conta, por si só, como
+cobertura de isolamento: o critério não é "os testes usam mais de um
+tenant nos fixtures", é "algum teste afirma explicitamente que a conta A
+não consegue ler nem escrever dado da conta B". Também não conta uma
+suíte que só reexecuta o caminho feliz da correção de UM incidente
+específico já reportado, em vez de iterar sobre o inventário completo de
+rotas — o mesmo princípio de cobertura do `TEN-001`/`TEN-002` (por rota
+existente, não por incidente já corrigido) vale aqui: uma suíte que só
+retesta o bug de ontem não protege as rotas que ainda não quebraram.
