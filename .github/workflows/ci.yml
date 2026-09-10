@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm ci
+      - name: Testes
+        run: npm test
+      - name: Validar nucleo de checks e referencias
+        run: npm run validate
+      - name: Cinturao de bloqueio tem exatamente 7 checks
+        run: |
+          total=$(grep -c "bloqueia: true" plugins/dd/checks/registry.yaml)
+          if [ "$total" -ne 7 ]; then
+            echo "cinturao de bloqueio tem $total checks, esperado 7"
+            exit 1
+          fi
