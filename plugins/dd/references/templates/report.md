@@ -174,9 +174,10 @@ métricas de baseline:
 - Perfil carregado: `<supabase / prisma-postgres / drizzle / firebase>`
 - Migrations do release: N (avaliação de risco no anexo)
 - N+1 zero em endpoints críticos: ✅/❌
-- Autorização (RLS / regras / tenancy — núcleo `TEN-001` a `TEN-004`): ✅/❌
+- Autorização (RLS / regras / tenancy — núcleo `TEN-001`, `TEN-002`, `TEN-004`, `TEN-005`): ✅/❌
 - Backup testado nos últimos 30 dias: ✅/❌
-- PII mapeada e função LGPD (núcleo `LGPD-001`): ✅/❌
+- PII mapeada (núcleo `LGPD-001`): ✅/❌
+- Função LGPD designada (Encarregado/DPO): ✅/❌
 - Anexos: específicos do perfil (`08-rls-audit.txt`, `08-migrate-status.txt`, etc.)
 
 ### Etapa 9 — Performance
