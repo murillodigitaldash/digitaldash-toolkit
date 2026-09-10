@@ -34,21 +34,28 @@ deste plugin.
    própria cadência — reaplique-o aqui uma vez por eixo, em vez de
    inventar uma segunda forma de percorrer `.protocolo/`. Reporte a data
    do `stamp` achado e os dias corridos até hoje; se nenhum stamp tiver
-   aquele eixo, reporte "nunca rodou".
+   aquele eixo, reporte "nunca rodou". Guarde o array `achados` desse
+   mesmo `achados.json` que você acabou de abrir — o passo 4 usa esses
+   dados, sem reabrir o arquivo nem abrir outro.
 
 3. **Atraso do eixo Postura** — usando a data achada no passo 2 para
    `postura`: se passaram mais de 90 dias, ou se nunca rodou, marque como
    **atrasada**. Mesmo critério de "Cadência" em `skills/postura/SKILL.md`
    — não é um número novo inventado aqui.
 
-4. **Achados abertos que bloqueiam** — para o run mais recente de cada
-   eixo (achado no passo 2), abra o `report.md` correspondente e leia a
-   seção "Achados por id de check (núcleo)": é a tabela que
-   `references/templates/report.md` documenta como a fonte que este
-   comando lê. Liste as linhas com `bloqueia: sim` e `status: aberto`,
-   com o eixo de origem de cada uma. Se um eixo não tem nenhum run ainda,
-   diga isso explicitamente em vez de omitir a linha ou tratar como zero
-   achados.
+4. **Achados abertos que bloqueiam** — do array `achados` dentro do
+   `achados.json` que você já abriu no passo 2, para o run mais recente
+   de cada eixo. Não abra `report.md` para isso: `achados.json` é o
+   contrato machine-readable, já traz `check`, `severidade`, `bloqueia`,
+   `arquivo`, `linha`, `status` e `resumo` por achado, e o arquivo já
+   está aberto do passo anterior — ver `references/templates/report.md`,
+   seção "Formato de `achados.json`", para o schema completo campo a
+   campo. Filtre os itens com `bloqueia: true` e
+   `status: "aberto"`; para cada um, reporte `check` (ou "sem id" quando
+   `check` é `null`), `arquivo:linha` (ou "sem localizacao" quando ambos
+   são `null`), `resumo` e o eixo de origem. Se um eixo não tem nenhum
+   run ainda, diga isso explicitamente em vez de omitir a linha ou tratar
+   como zero achados.
 
 5. **Exceções vencidas ou a vencer** — leia a lista `excecoes` do
    `.dd/config.yml` coletado acima, se o arquivo existir. Cada exceção

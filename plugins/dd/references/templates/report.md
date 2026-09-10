@@ -218,12 +218,14 @@ métricas de baseline:
 
 O Detalhamento por etapa acima organiza achados por etapa. Esta seção
 complementa com uma view por id de check do núcleo (`checks/registry.yaml`)
-— **é esta seção que o `/dd:status` lê.** Preencher uma linha por achado
-que tenha id de check do núcleo; o título vem do `registry.yaml` e o
-julgamento completo mora no guia do domínio dentro de `checks/` — não
-repetir aqui. Achados sem id de check não entram nesta tabela: eles
-continuam só no Detalhamento por etapa e em `achados.json`, indexados pelo
-número da etapa (ver "Formato de `achados.json`" abaixo).
+— **é a leitura humana dos achados por id de check.** O contrato
+machine-readable é `achados.json`: é ele que `/dd:status`, e qualquer
+outro consumidor automatizado, deve ler — não esta tabela. Preencher uma
+linha por achado que tenha id de check do núcleo; o título vem do
+`registry.yaml` e o julgamento completo mora no guia do domínio dentro de
+`checks/` — não repetir aqui. Achados sem id de check não entram nesta
+tabela: eles continuam só no Detalhamento por etapa e em `achados.json`,
+indexados pelo número da etapa (ver "Formato de `achados.json`" abaixo).
 
 | id | título | severidade | bloqueia | arquivo:linha | status |
 |---|---|---|---|---|---|
