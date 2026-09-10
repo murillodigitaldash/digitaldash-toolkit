@@ -46,7 +46,7 @@ test('excecao vencida e reportada', () => {
 })
 
 test('excecao valida no futuro nao gera erro', () => {
-  const config = { excecoes: [{ id: 'SEC-001', motivo: 'exemplo', expira: '2027-01-01' }] }
+  const config = { excecoes: [{ id: 'SEC-001', caminho: 'src/exemplo.js', motivo: 'exemplo', expira: '2027-01-01' }] }
   assert.deepEqual(validarExcecoes(config, new Set(['SEC-001']), new Date('2026-09-09T12:00:00Z')), [])
 })
 
@@ -61,6 +61,12 @@ test('excecao sem motivo ou sem expira e reportada', () => {
   const erros = validarExcecoes(config, new Set(['SEC-001']), new Date('2026-09-09T12:00:00Z'))
   assert.ok(erros.some((e) => /motivo ausente/.test(e)))
   assert.ok(erros.some((e) => /expira ausente/.test(e)))
+})
+
+test('excecao sem caminho e reportada', () => {
+  const config = { excecoes: [{ id: 'SEC-001', motivo: 'exemplo', expira: '2027-01-01' }] }
+  const erros = validarExcecoes(config, new Set(['SEC-001']), new Date('2026-09-09T12:00:00Z'))
+  assert.ok(erros.some((e) => /caminho ausente/.test(e)))
 })
 
 test('validarTudo agrega os tres validadores', () => {

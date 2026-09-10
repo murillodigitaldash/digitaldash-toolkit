@@ -132,6 +132,7 @@ export function validarExcecoes(config, idsConhecidos, hoje = new Date()) {
     if (!e?.id) erros.push(`${onde}: campo id ausente`)
     else if (!idsConhecidos.has(e.id)) erros.push(`${onde}: id nao existe no registry`)
     if (!e?.motivo) erros.push(`${onde}: campo motivo ausente`)
+    if (!e?.caminho) erros.push(`${onde}: campo caminho ausente`)
     if (!e?.expira) {
       erros.push(`${onde}: campo expira ausente`)
       continue
