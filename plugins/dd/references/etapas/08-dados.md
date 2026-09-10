@@ -3,10 +3,10 @@
 **Objetivo:** auditar a camada onde mora o valor do produto. Vem antes de performance porque problema de performance em apps web frequentemente é problema de query.
 
 **Carregue o perfil correspondente** de `references/stacks/`:
-- `data-supabase.md` — Supabase / Postgres com RLS.
-- `data-prisma-postgres.md` — Prisma com Postgres (ou MySQL).
-- `data-drizzle.md` — Drizzle ORM.
-- `data-firebase.md` — Firebase / Firestore.
+- `references/stacks/data-supabase.md` — Supabase / Postgres com RLS.
+- `references/stacks/data-prisma-postgres.md` — Prisma com Postgres (ou MySQL).
+- `references/stacks/data-drizzle.md` — Drizzle ORM.
+- `references/stacks/data-firebase.md` — Firebase / Firestore.
 - Para outros (TypeORM, raw SQL, etc.), use o perfil Prisma como base e adapte.
 
 **Procurar (núcleo invariável):**

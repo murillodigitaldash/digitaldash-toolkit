@@ -14,6 +14,8 @@
 - Route handlers: validar método, content-type, tamanho de payload.
 - Cookies de sessão: `httpOnly`, `secure`, `sameSite=lax`/`strict`.
 
+*Específico Node/Express (processo HTTP de longa duração):* headers de segurança, rate limiting dedicado, tratamento de erro central e limite de tamanho de payload têm perfil dedicado — ver `references/stacks/runtime-node.md`.
+
 **Ferramentas:** as dos checks do núcleo — ver `deteccao.cmd` de cada id em `checks/registry.yaml` (`gitleaks`, `npm audit`, entre outras) — mais as que ainda não têm check formal: `osv-scanner` (cobre as bases OSV e GHSA, complementando o `npm audit` de `DEP-001`, que só lê o advisory database do npm), `semgrep` (SAST), `eslint-plugin-security`/`eslint-plugin-no-unsanitized`, e verificação de headers via `securityheaders.com` ou equivalente.
 
 **Comandos:**

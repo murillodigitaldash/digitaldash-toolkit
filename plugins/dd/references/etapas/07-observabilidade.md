@@ -3,10 +3,10 @@
 **Objetivo:** garantir que o sistema é enxergável em produção. Logs, métricas, traces, alertas com runbook. Vem antes de performance porque medir sem observabilidade é medir só local.
 
 **Carregue o perfil correspondente** de `references/stacks/`:
-- `obs-sentry.md` — Sentry.
-- `obs-datadog.md` — Datadog.
-- `obs-betterstack.md` — BetterStack / Logtail.
-- `obs-opentelemetry.md` — OpenTelemetry genérico (vendor-agnostic).
+- `references/stacks/obs-sentry.md` — Sentry.
+- `references/stacks/obs-datadog.md` — Datadog.
+- `references/stacks/obs-betterstack.md` — BetterStack / Logtail.
+- `references/stacks/obs-opentelemetry.md` — OpenTelemetry genérico (vendor-agnostic).
 - Se o projeto não tem stack definido, use OpenTelemetry como recomendação default.
 
 **Procurar (núcleo invariável):**

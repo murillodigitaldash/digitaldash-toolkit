@@ -22,6 +22,8 @@
 
 A integração com sink de erros (Sentry/Datadog/BetterStack) é detalhada na Etapa 7.
 
+Em backend Node/Express, tratamento de erro centralizado, `process.on('unhandledRejection')`/`uncaughtException` e timeout de requisição têm perfil dedicado — ver `references/stacks/runtime-node.md`.
+
 **Ferramentas:** ESLint (`no-floating-promises`, `no-misused-promises`, `promise/catch-or-return`), `react-error-boundary`.
 
 **Reportar:** mapa de async sem tratamento; rotas sem `error.tsx`/boundary; proposta de cliente HTTP padronizado; achados de `SEC-006` encontrados no caminho.
