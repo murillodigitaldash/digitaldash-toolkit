@@ -33,7 +33,7 @@ Comportamento detalhado de cada modo — passo a passo do modo `auto`, tabela de
 2. Detecte o stack do projeto (`package.json`, `tsconfig.json`, presença de banco, framework) — a Etapa 2 e as etapas 7 a 9 carregam perfil conforme o que for detectado.
 3. Crie `.protocolo/<YYYY-MM-DD-HHmm>/` na raiz do projeto auditado; salve todo output ali.
 4. Para modo `auto`, siga o procedimento de `references/modos.md` antes de executar qualquer etapa.
-5. Execute as etapas selecionadas em ordem numérica. Em cada etapa, **liste achados primeiro e peça aprovação antes de modificar arquivos**.
+5. Despache os agentes auditores donos das etapas selecionadas — ver "Despacho dos cinco agentes auditores" abaixo — numa única mensagem quando mais de um agente estiver envolvido, para rodar em paralelo. Cada agente só lista achados; **peça aprovação do usuário antes de modificar qualquer arquivo**.
 6. Para refatorações aprovadas, gere tarefas no formato de `references/templates/task.md`.
 7. Gere os três arquivos de saída da Etapa 12 (`report.md`, `achados.json`, `metricas.json`) em `.protocolo/<stamp>/` — ver `references/etapas/12-gate.md` para o formato de cada um e a ordem de consolidação do plano de remediação.
 
@@ -59,6 +59,24 @@ A ordem não é arbitrária: cada etapa prepara o terreno para a próxima. Pular
 | 10 | Acessibilidade | Qualidade de produto final, ao lado das outras auditorias | `references/etapas/10-acessibilidade.md` |
 | 11 | Segurança e supply chain | Auditoria, sobre código que não vai mais mudar muito | `references/etapas/11-seguranca.md` |
 | 12 | Gate final | Consolidação de tudo, métricas de baseline e decisão go/no-go | `references/etapas/12-gate.md` |
+
+---
+
+## Despacho dos cinco agentes auditores
+
+As etapas 1 a 11 não rodam mais seriais num agente só: rodam como **cinco agentes auditores independentes** em `agents/`, cada um dono de um grupo de etapas e, onde aplicável, de domínios inteiros do núcleo. O mapeamento completo, e o porquê de detecção ser paralela enquanto remediação não é, está em `references/etapas/12-gate.md` — não repetido aqui.
+
+| Agente | Etapas | Domínios do núcleo |
+|---|---|---|
+| `dd-auditor-codigo` | 1, 2, 3, 4 | — |
+| `dd-auditor-resiliencia` | 5, 6, 7 | LOG |
+| `dd-auditor-dados` | 8 | LGPD, LGPD-S, TEN |
+| `dd-auditor-produto` | 9, 10 | — |
+| `dd-auditor-seguranca` | 11 | SEC, DEP, AI |
+
+**Despache os agentes do modo escolhido numa única mensagem**, uma chamada por agente, para que rodem concorrentes — nunca um de cada vez esperando o retorno do anterior. Despacho sequencial anula o motivo de existirem cinco agentes em vez de onze etapas seriais. Invocação cirúrgica de etapa única despacha só o agente dono daquela etapa.
+
+Nenhum agente escreve ou edita: cada um devolve `{ "agente": "<nome>", "achados": [...] }`, com `achados` já no formato de `achados.json` (`references/templates/report.md`). Depois que todos retornarem: concatene os arrays `achados` dos cinco e **ordene o plano de remediação 1 → 12**, nunca pela ordem de chegada das respostas — detecção em paralelo é livre, remediação não é.
 
 ---
 
