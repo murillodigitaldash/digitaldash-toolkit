@@ -23,6 +23,6 @@ npx depcheck --json > .protocolo/$STAMP/01-depcheck.json
 npx madge --orphans --extensions ts,tsx,js,jsx src > .protocolo/$STAMP/01-orphans.txt
 ```
 
-**Reportar:** lista por categoria com caminho, linha e sugestão.
+**Reportar:** lista por categoria com caminho, linha e sugestão. Tarefas no formato de `references/templates/task.md`.
 
 **Gate de saída:** zero arquivos órfãos, zero exports não usados em produção, TODOs sem ticket aberto remediados.

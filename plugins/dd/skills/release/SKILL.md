@@ -34,7 +34,8 @@ Comportamento detalhado de cada modo — passo a passo do modo `auto`, tabela de
 3. Crie `.protocolo/<YYYY-MM-DD-HHmm>/` na raiz do projeto auditado; salve todo output ali.
 4. Para modo `auto`, siga o procedimento de `references/modos.md` antes de executar qualquer etapa.
 5. Execute as etapas selecionadas em ordem numérica. Em cada etapa, **liste achados primeiro e peça aprovação antes de modificar arquivos**.
-6. Gere o relatório final com `references/templates/report.md`, salvo em `.protocolo/<stamp>/report.md`.
+6. Para refatorações aprovadas, gere tarefas no formato de `references/templates/task.md`.
+7. Gere o relatório final com `references/templates/report.md`, salvo em `.protocolo/<stamp>/report.md`.
 
 Princípio geral: **achados primeiro, ação depois**. Nunca aplique refatoração em massa sem confirmação por item.
 
