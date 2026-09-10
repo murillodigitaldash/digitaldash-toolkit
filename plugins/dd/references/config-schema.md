@@ -129,10 +129,10 @@ prazo. Quatro campos, todos obrigatórios:
 
 **Regra: toda exceção tem `expira`, sem exceção da regra.**
 `scripts/validate-checks.mjs` exporta `validarExcecoes`, que recusa uma
-exceção sem `id`, sem `motivo` ou sem `expira`, e recusa também uma
+exceção sem `id`, sem `motivo`, sem `caminho` ou sem `expira`, e recusa também uma
 exceção cujo `expira` já passou — hoje exercida pela suíte de testes
 deste plugin. É a mesma lógica que o gate crítico de projeto (v0.3, spec
-§6.4) vai reusar para bloquear PR quando encontrar qualquer um dos três
+§6.4) vai reusar para bloquear PR quando encontrar qualquer um dos quatro
 problemas — essa parte ainda não está instalada em nenhum projeto alvo
 nesta versão. Enquanto isso, quem avisa é `/dd:status`: ele lê
 `.dd/config.yml` a cada chamada e reporta exceções vencidas e a vencer
@@ -145,8 +145,7 @@ de ter criado. A diferença entre dívida técnica registrada e dívida
 técnica invisível é ter escrito, num lugar que expira e que alguém
 revisita, por que a exceção existe.
 
-**Nota de implementação:** o validador hoje checa `id`, `motivo` e
-`expira` programaticamente; `caminho` é obrigatório pela convenção deste
-schema e pelo que `/dd:status` lê, mas não tem checagem própria no
-validador. Trate a ausência de `caminho` como config inválida mesmo
-assim — não é uma lacuna a explorar.
+**Nota de implementação:** o validador checa `id`, `motivo`, `caminho` e
+`expira` programaticamente — qualquer um dos quatro ausente causa rejeição
+da config. A validade de `id` é confirmada contra o registry de checks
+(`checks/registry.yaml`), e a de `expira` contra a data de hoje.
