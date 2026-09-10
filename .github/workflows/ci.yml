@@ -6,18 +6,26 @@ on:
   pull_request:
 
 jobs:
-  verificar:
+  testar:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['22', '24']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ matrix.node }}
       - run: npm ci
       - name: Testes
         run: npm test
       - name: Validar nucleo de checks e referencias
         run: npm run validate
+
+  cinturao:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Cinturao de bloqueio tem exatamente 7 checks
         run: |
           total=$(grep -c "bloqueia: true" plugins/dd/checks/registry.yaml)
