@@ -62,5 +62,5 @@ npx playwright test --grep @smoke
 
 **Arquivos de saída em `.protocolo/<stamp>/`:**
 - `report.md` — relatório consolidado, gerado a partir de `references/templates/report.md`, com o plano de remediação ordenado 1 → 12.
-- `achados.json` — achados de todas as etapas indexados por id de check do núcleo (`SEC-*`, `DEP-*`, `LOG-*`, `LGPD-*`, `TEN-*`, `AI-*`); achados sem id de check (etapas 1-4, 9, 10) indexados pelo número da etapa.
+- `achados.json` — achados de todas as etapas indexados por id de check do núcleo (`SEC-*`, `DEP-*`, `LOG-*`, `LGPD-*`, `TEN-*`, `AI-*`); achados sem id de check indexados pelo número da etapa.
 - `metricas.json` — as métricas de baseline listadas acima, em formato estruturado, para comparação automática com o release seguinte.

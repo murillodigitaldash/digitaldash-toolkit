@@ -33,6 +33,7 @@
 - SLOs definidos para os fluxos críticos da Etapa 6 com burn rate alerts.
 
 *Cobertura:* eventos críticos de autenticação e mudança de permissão têm check próprio no núcleo — `LOG-001` e `LOG-006` — não repita o critério aqui, ver `checks/logs.md`. Além disso:
+- Mudança de email logada (sem check próprio no núcleo).
 - Erros do front (boundaries da Etapa 5) reportados ao sink.
 - Server Actions e route handlers instrumentados.
 
@@ -57,4 +58,4 @@ grep -rn "console\.\(log\|error\|warn\)" src > .protocolo/$STAMP/07-console-uses
 - Lista de alertas configurados e quais têm runbook.
 - SLOs definidos e burn rate alerts.
 
-**Gate de saída:** logger estruturado configurado. Sink recebendo eventos de teste do release atual. `LOG-001` e `LOG-006` sem achado aberto sem dono. Pelo menos 3 alertas com runbook. Tracing nos fluxos críticos da Etapa 6.
+**Gate de saída:** logger estruturado configurado. Sink recebendo eventos de teste do release atual. `LOG-001` e `LOG-006` sem achado aberto sem dono. Mudança de email logada. Pelo menos 3 alertas com runbook. Tracing nos fluxos críticos da Etapa 6.
