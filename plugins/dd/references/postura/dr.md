@@ -55,19 +55,29 @@ ninguém saberia até precisar dele de verdade.
 **Procurar:** o registro do último exercício de restore de fato executado.
 
 **Evidência aceitável (o padrão mais importante deste arquivo):** a resposta
-precisa conter as quatro partes a seguir, não apenas uma confirmação. (1) a
+precisa conter as quatro partes a seguir, não apenas uma confirmação, **e a
+data precisa cair dentro do ciclo trimestral corrente** — os mesmos ~90 dias
+que definem a cadência deste eixo (seção "Cadência" do `SKILL.md`). (1) a
 **data** em que o restore foi executado; (2) o **ambiente** onde rodou —
 staging ou sandbox isolado, nunca o ambiente de produção; (3) o **escopo
 validado** — os dados restaurados estavam íntegros, e a aplicação subiu e
 serviu leitura correta a partir deles, não só "o arquivo de backup abriu"; e
 (4) **quem executou**. "Backup configurado" sozinho não conta como restore
-testado. Um "sim" sem essas quatro informações é exatamente a lacuna que
-este eixo existe para fechar — trate-o como achado aberto, não como item
-resolvido.
+testado — e um restore que cumpre as quatro partes mas caiu fora do ciclo
+corrente também não conta como resolvido: é achado aberto por recência
+vencida, com a mesma severidade de nunca ter sido testado. Reportar a data
+de um restore de um ciclo anterior como se ela ainda cobrisse o ciclo atual
+é exatamente o forever-yes que este eixo existe para fechar — o restore
+precisa ser reexecutado a cada ciclo, não apenas redocumentado. Um "sim" sem
+essas quatro informações, ou com uma data vencida, é a lacuna que este eixo
+existe para fechar — trate-o como achado aberto, não como item resolvido.
 
-**Reportar:** data do último restore testado × ambiente × escopo validado ×
-responsável. Se o restore nunca foi testado, reportar isso explicitamente
-como achado — nunca omitir a linha por falta de dado.
+**Reportar:** data do último restore testado × dentro do ciclo trimestral
+corrente (sim/não) × ambiente × escopo validado × responsável. Se o restore
+nunca foi testado, ou se a data mais recente está fora do ciclo corrente,
+reportar isso explicitamente como achado — nunca omitir a linha por falta
+de dado, e nunca reportar uma data vencida como se resolvesse o ciclo
+atual.
 
 ### RTO documentado e confrontado com a realidade
 
@@ -80,11 +90,14 @@ sistema crítico.
 
 **Evidência aceitável:** o valor de RTO alvo (por exemplo, "4 horas") junto
 do tempo real observado no último exercício de restore do tópico anterior —
-um RTO alvo sem um tempo medido de restore real é uma meta nunca confrontada
-com a realidade, o que equivale a não ter meta nenhuma.
+e esse exercício precisa ser o mesmo que satisfaz o corte de recência do
+tópico anterior (dentro do ciclo trimestral corrente), não um teste antigo
+reaproveitado. Um RTO alvo sem um tempo medido de restore real, ou medido
+apenas em um exercício fora do ciclo corrente, é uma meta nunca confrontada
+com a realidade atual, o que equivale a não ter meta nenhuma.
 
-**Reportar:** sistema × RTO alvo × tempo observado no último teste × dentro
-ou fora do alvo.
+**Reportar:** sistema × RTO alvo × tempo observado no último teste dentro do
+ciclo corrente × dentro ou fora do alvo.
 
 ### RPO documentado e confrontado com a frequência real de backup
 
@@ -132,10 +145,16 @@ procedimento de recuperação sob pressão e com o relógio correndo.
 que ele foi exercitado — não apenas escrito e arquivado.
 
 **Evidência aceitável:** a localização do runbook, a data do último
-exercício (simulação em mesa ou execução real) e quem participou. Um runbook
-que nunca foi exercitado é um documento de intenção, não um procedimento
-validado — reportar essa distinção explicitamente, não tratar "existe" e
-"foi testado" como a mesma coisa.
+exercício (simulação em mesa ou execução real) e quem participou — e essa
+data também precisa cair dentro do ciclo trimestral corrente (os mesmos
+~90 dias da cadência deste eixo), pelo mesmo motivo do restore: um exercício
+de anos atrás, redocumentado ciclo após ciclo, não prova nada sobre o
+runbook de hoje. Um runbook que nunca foi exercitado, ou que só foi
+exercitado em um ciclo anterior ao corrente, é um documento de intenção, não
+um procedimento validado — reportar essa distinção explicitamente, tratando
+o exercício vencido como achado aberto, e nunca tratar "existe" e "foi
+testado neste ciclo" como a mesma coisa.
 
 **Reportar:** runbook localizado (sim/não) × data do último exercício ×
-participantes × tipo de exercício (simulação ou execução real).
+dentro do ciclo trimestral corrente (sim/não) × participantes × tipo de
+exercício (simulação ou execução real).

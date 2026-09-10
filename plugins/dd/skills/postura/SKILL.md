@@ -78,10 +78,19 @@ comum: ela diz o que uma resposta precisa conter pra contar como resolvida
 
 ## Núcleo de checks
 
-Esta skill não repete critério que já mora no núcleo: secrets, código,
-LGPD e logs (categorias já absorvidas nos checks `SEC-*`, `TEN-*`, `LGPD-*`
-e `LOG-*`) são executados pelo id, com o julgamento vivendo uma vez só no
-guia do domínio correspondente dentro de `checks/`. As quatro referências
-deste eixo cobrem exatamente o que o núcleo ainda não formaliza — IAM,
-infraestrutura, disaster recovery e a maturidade de supply chain acima do
-que `DEP-*` já verifica.
+Esta skill não repete critério que já mora no núcleo: secrets (`SEC-*`),
+LGPD (`LGPD-*`) e logs (`LOG-*`) são executados pelo id, com o julgamento
+vivendo uma vez só no guia do domínio correspondente dentro de `checks/`.
+Código é diferente e não pode ser lido como equivalente: só a fatia de
+isolamento de tenant e IDOR da categoria CÓDIGO da fonte está em
+`TEN-001` a `TEN-006` — as classes de injeção (SQL injection, XSS, CSRF,
+SSRF, command injection e as demais) ficam fora do escopo deste eixo e são
+cobertas, **parcialmente**, pelo eixo Release na Etapa 11, via
+`references/owasp-checklist.md`. "Parcialmente" é literal, não modéstia de
+redação: path traversal, race conditions, mass assignment, open redirect e
+insecure deserialization não têm cobertura em lugar nenhum do plugin
+hoje — nem aqui, nem no núcleo, nem no checklist da Etapa 11. Esse gap é
+real; fechá-lo é trabalho de uma versão futura, fora do escopo desta task.
+As quatro referências deste eixo cobrem exatamente o que o núcleo ainda não
+formaliza — IAM, infraestrutura, disaster recovery e a maturidade de supply
+chain acima do que `DEP-*` já verifica.
