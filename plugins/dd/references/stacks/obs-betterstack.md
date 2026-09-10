@@ -36,6 +36,7 @@ grep -rn "logtail\|@better\|BetterStack" src package.json > .protocolo/$STAMP/07
 Estruturação, PII em log e retenção já têm check próprio no núcleo — `LOG-002`, `LOG-003` e `LOG-005` — não repita o critério aqui, ver `checks/logs.md`. Implementação específica de BetterStack:
 
 - Campos: `level`, `timestamp`, `service`, `env`, `version`, `requestId`.
+- Sem PII bruta — mascarar emails, CPF, telefone.
 - Retenção configurada por tier do plano — confirmar que atende `LOG-005` (>= 90 dias).
 
 ## Uptime monitoring

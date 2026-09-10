@@ -27,7 +27,7 @@ grep -rn "datadog\|dd-trace\|DD_" src package.json > .protocolo/$STAMP/07-datado
 
 ## Logs
 
-Estruturação, correlação por trace id e retenção já têm check próprio no núcleo — `LOG-003` a `LOG-005` — não repita o critério aqui, ver `checks/logs.md`. Implementação específica de Datadog:
+Estruturação e correlação por trace id já têm check próprio no núcleo — `LOG-003` e `LOG-004` — não repita o critério aqui, ver `checks/logs.md`. Implementação específica de Datadog:
 
 - Correlação via `dd.trace_id` (`logInjection: true`).
 - Atributos padrão: `service`, `env`, `version`.
@@ -79,13 +79,13 @@ Datadog cobra por host, ingestão de logs, e indexação. Auditar:
 - Logs indexados vs archived.
 - Custom metrics por host.
 - Hosts inativos sendo cobrados.
-- Retenção alinhada com necessidade (não tudo precisa 30 dias).
+- Retenção alinhada com necessidade (não tudo precisa 30 dias) — piso de `LOG-005`, ver `checks/logs.md#log-005`.
 
 ## Checklist Datadog no relatório
 
 - [ ] `dd-trace` inicializado antes de imports da app.
 - [ ] `DD_SERVICE`, `DD_ENV`, `DD_VERSION` por ambiente.
-- [ ] `LOG-003` a `LOG-005` sem achado aberto sem dono.
+- [ ] `LOG-003` e `LOG-004` sem achado aberto sem dono.
 - [ ] APM cobrindo todos os serviços do projeto.
 - [ ] RUM com privacy level adequado.
 - [ ] Métricas de negócio via dogstatsd.
@@ -93,4 +93,4 @@ Datadog cobra por host, ingestão de logs, e indexação. Auditar:
 - [ ] Synthetics nos fluxos críticos.
 - [ ] Monitors com runbook.
 - [ ] SLOs configurados com burn rate alerts.
-- [ ] Custos auditados e dentro do esperado.
+- [ ] Custos auditados e dentro do esperado, `LOG-005` sem achado aberto sem dono.

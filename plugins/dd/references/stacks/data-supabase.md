@@ -32,6 +32,7 @@ supabase db lint
 **Esta é a parte mais crítica.** No Supabase, autorização vive no banco via RLS. Erro aqui é vazamento direto de dados. A ausência de política por linha em tabela com dado de tenant já tem check e julgamento próprios no núcleo — `TEN-004` — não repita o critério aqui, ver `checks/tenant.md#ten-004`. O que segue é a implementação específica de RLS no Supabase para satisfazer esse check.
 
 **Verificar:**
+- **Habilitar RLS na tabela** — `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;`
 - **Policy de SELECT específica** — sem `USING (true)` em tabelas com dado de usuário.
 - **Policy de INSERT/UPDATE/DELETE explícita** — sem fallback permissivo.
 - **`auth.uid()` usado corretamente** nas policies.
