@@ -35,7 +35,7 @@ Comportamento detalhado de cada modo — passo a passo do modo `auto`, tabela de
 4. Para modo `auto`, siga o procedimento de `references/modos.md` antes de executar qualquer etapa.
 5. Execute as etapas selecionadas em ordem numérica. Em cada etapa, **liste achados primeiro e peça aprovação antes de modificar arquivos**.
 6. Para refatorações aprovadas, gere tarefas no formato de `references/templates/task.md`.
-7. Gere o relatório final com `references/templates/report.md`, salvo em `.protocolo/<stamp>/report.md`.
+7. Gere os três arquivos de saída da Etapa 12 (`report.md`, `achados.json`, `metricas.json`) em `.protocolo/<stamp>/` — ver `references/etapas/12-gate.md` para o formato de cada um e a ordem de consolidação do plano de remediação.
 
 Princípio geral: **achados primeiro, ação depois**. Nunca aplique refatoração em massa sem confirmação por item.
 
