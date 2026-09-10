@@ -21,15 +21,18 @@ que o usuário roda depois de confirmar.
 
 ## Como propor
 
-1. **Classifique o eixo primeiro.**
-   - Há arquivos alterados no diff acima → eixo `release`.
-   - Diff vazio → leia, para cada stamp em `.protocolo/` do mais recente
-     ao mais antigo, o `achados.json` até achar o primeiro com
-     `"eixo": "postura"`, e calcule os dias corridos desde o `stamp` —
-     exatamente o algoritmo que `skills/postura/SKILL.md` descreve na
-     seção "Cadência". Não recalcule esse critério de outro jeito. Se
-     passaram mais de 90 dias, ou não há nenhum run de postura, proponha
-     eixo `postura`.
+1. **Classifique o eixo.** Primeiro calcule a cadência do eixo Postura —
+   você precisa do resultado nos dois ramos abaixo, não só quando o diff
+   está vazio: leia, para cada stamp em `.protocolo/` do mais recente ao
+   mais antigo, o `achados.json` até achar o primeiro com
+   `"eixo": "postura"`, e calcule os dias corridos desde o `stamp` —
+   exatamente o algoritmo que `skills/postura/SKILL.md` descreve na seção
+   "Cadência". Não recalcule esse critério de outro jeito. Mais de 90
+   dias, ou nenhum run de postura, é postura **atrasada**.
+   - Há arquivos alterados no diff acima → eixo `release`. Se a postura
+     também estiver atrasada, isso não muda o eixo — mas inclua um aviso
+     de atraso na proposta (passo 4).
+   - Diff vazio e postura atrasada → eixo `postura`.
    - Diff vazio e postura em dia → não proponha nada arbitrário. Diga ao
      usuário que não há sinal de trabalho pendente e pergunte o que ele
      quer rodar.
@@ -54,6 +57,8 @@ que o usuário roda depois de confirmar.
    Modo proposto: <release|auto|hotfix|feature|auditoria>   (só quando eixo = release)
    Motivo: <uma linha citando os arquivos, a área crítica, ou o atraso de
    cadência que motivou a escolha>
+   Aviso: postura atrasada há <N> dias — considere rodar `/dd:postura` em
+   seguida.   (só quando eixo = release e a postura calculada no passo 1 está atrasada)
 
    Confirma? Se sim, rode `/dd:release <modo>` (ou `/dd:postura`, se o
    eixo proposto foi postura).
