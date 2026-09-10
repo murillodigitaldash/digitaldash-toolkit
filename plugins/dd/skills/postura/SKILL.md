@@ -69,8 +69,7 @@ comum: ela diz o que uma resposta precisa conter pra contar como resolvida
    "Evidência aceitável" antes de marcar como resolvido — um "sim" sem ela
    é achado aberto, não item passado.
 5. Gere `report.md` e `achados.json` em `.protocolo/<stamp>/`, no formato de
-   `references/templates/report.md`, com `"eixo": "postura"` em cada
-   achado — é esse campo que a próxima execução usa para calcular a
+   `references/templates/report.md`, com `"eixo": "postura"` no topo do arquivo — é esse campo que a próxima execução usa para calcular a
    cadência.
 6. Não produza decisão go/no-go. Entregue achados priorizados por
    severidade e um resumo do que fica para o planejamento do próximo
